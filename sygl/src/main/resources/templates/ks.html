@@ -1,0 +1,156 @@
+<! DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<div th:include="comm::header"></div>
+		<script>
+			function filterQuery(){
+				$('#ksGrid').datagrid('reload',{
+					ksbh:$('#ksbh').numberbox('getValue'),
+					ksmc:$('#ksmc').textbox('getValue')
+				});
+			}
+			
+			function toDelete(){
+				var row =$('#ksGrid').datagrid('getSelected')
+				if(row){
+					$.messager.confirm('询问','是否删除',function(f){
+						if(f==true){
+							$.post('ksDelete.do',{ksbh:row.ksbh},function(){
+								$.messager.show({
+									title:"提示",
+									msg:'删除成功'
+								});
+								$('#ksGrid').datagrid('load');
+							})
+						}
+					});
+				}
+			}
+			
+			function toAdd(){
+				$('#dlg1').dialog('open');
+			}
+			function saves(){
+				$('#ksForm').form('submit',{
+					success:function(){
+						$('#dlg1').dialog('close'),
+						$.messager.show({
+							title:"提示",
+							msg:"保存成功"
+						});
+						$('#ksGrid').datagrid('load');
+					}
+				});
+			}
+			function toEdit(){
+				var row = $('#ksGrid').datagrid('getSelected');
+				if(row){
+					$.post('ksEdit.do',{ksbh:row.ksbh},function(ks){
+						$('#ksUpdateForm').form('load',ks);
+						$('#dlg2').dialog('open');
+					},'json')
+				}
+			}
+			
+			function update(){
+				$('#ksUpdateForm').form('submit',{
+					success:function(){
+						$.messager.show({
+							title:"提示",
+							msg:"修改成功"
+						});
+						$('#dlg2').dialog('close');
+						$("#ksGrid").datagrid('reload');
+					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<table id="ksGrid" class="easyui-datagrid"
+				data-options="url:'ks.do',pagination:true,
+				singleSelect:true,fit:true,fitColumns:true,
+				 toolbar:'#filters'">
+				<thead>
+					<tr>
+						<th data-options="field:'ksbh',width:80,align:'center'">客商编号</th>
+						<th data-options="field:'ksmc',width:100,align:'center'">客商名称</th>
+						<th data-options="field:'zjm',width:80,align:'center'">助记码</th>
+						<th data-options="field:'ksdz',width:80,align:'center'">客商地址</th>
+						<th data-options="field:'kslxr',width:80,align:'center'">客商联系人</th>
+						<th data-options="field:'kslxfs',width:80,align:'center'">客商联系方式</th>
+						<th data-options="field:'ksfkfs',width:80,align:'center'">客商付款方式</th>
+					</tr>
+				</thead>
+		</table>
+		<div id="filters">
+			<input class="easyui-numberbox" id="ksbh" name="ksbh" label="客商编号"/>
+			<input class="easyui-textbox" id="ksmc" name="ksmc" label="客商名称" />
+			<a class="easyui-linkbutton" iconCls="icon-search" onclick="filterQuery()">查询</a>
+			<a class="easyui-linkbutton" iconCls="icon-add" onclick="toAdd()">新建</a>
+			<a class="easyui-linkbutton" iconCls="icon-edit" onclick="toEdit()">编辑</a>
+			<a class="easyui-linkbutton" iconCls="icon-remove" onclick="toDelete()">删除</a>
+		</div>
+		
+		<div class="easyui-dialog" id="dlg1" data-options="modal:true,width:350,closed:true,title:'批量导入',buttons:'#btns1'">
+			<div style="margin:20px;">
+				<form id="ksForm" action="ksSaves.do" method="post" enctype="multipart/form-data">
+					<input type="file" name="excel" />
+				</form>
+			</div>
+		</div>
+		
+		<div id="btns1">
+			<a class="easyui-linkbutton" iconCls="icon-ok" onclick="saves()">提交</a>		
+		</div>
+		
+		<div class="easyui-dialog" id="dlg2" data-options="modal:true,width:350,closed:true,title:'修改',buttons:'#btns2'">
+			<form id="ksUpdateForm" action="ksUpdate.do" method="post">
+			<div style="margin:10px;">
+				<input class="easyui-textbox"  id="eidt_ksbh" name="ksbh" readonly="true" style="width:100%" label="客商编号"/>
+			</div>
+			<div style="margin:10px;">
+				<input class="easyui-textbox"  id="eidt_ksmc" name="ksmc" required="true" style="width:100%" label="客商名称"/>
+			</div>
+			<div style="margin:10px;">
+				<input class="easyui-textbox"  id="eidt_ksdz" name="ksdz" required="true" style="width:100%" label="客商地址"/>
+			</div>
+			<div style="margin:10px;">
+				<input class="easyui-textbox"  id="eidt_kslxr" name="kslxr" required="true" style="width:100%" label="客商联系人"/>
+			</div>
+			<div style="margin:10px;">
+				<input class="easyui-textbox"  id="eidt_kslxfs" name="kslxfs" required="true" style="width:100%" label="客商联系方式"/>
+			</div>
+			<div style="margin:10px;">
+				<input class="easyui-textbox"  id="eidt_ksfkfs" name="ksfkfs" required="true" style="width:100%" label="客商付款方式"/>
+			</div>
+		</div>
+		
+		<div id="btns2">
+			<a class="easyui-linkbutton" iconCls="icon-ok" onclick="update()">提交</a>
+		</div>
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

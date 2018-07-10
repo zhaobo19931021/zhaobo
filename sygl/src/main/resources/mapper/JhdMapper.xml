@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zb20180409.sygl.dao.IJhdDao">
+
+	<select id="total"  resultType="int">
+		select count(*) from t_jhd
+	</select>
+	
+	<select id="findJhdAll" resultType="com.zb20180409.sygl.domain.Jhd"> 
+		select 
+			j.*,
+			u.truename jhrmc,
+			g.gysmc ,
+			k.kfmc  
+		from 
+		
+		t_jhd j inner join t_user u on j.jhr = u.uno
+			    inner join t_gys g on j.gys = g.gysbh
+		        inner join t_kf k on j.kf = k.kfbh
+		order by jhdbh desc , jhsj desc
+		limit #{start},#{length}
+	</select>
+	
+	<select id="findJhdbh" resultType="string">
+		select jhdbh from t_jhd where jhdbh like concat(#{jhdbhPrefix},'%')
+		order by jhdbh desc limit 0,1
+	</select>
+	
+	<insert id="save" >
+		insert into t_jhd values(#{jhdbh},#{jhsj},#{jhr},#{gys},#{kf},#{zj},#{yl1},#{yl2},#{yl3})
+	</insert>
+	
+	<insert id="saveXq">
+		insert into t_jhxq values(#{jhdbh},#{spbh},#{sl},#{dj},null,null,null)
+	</insert>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

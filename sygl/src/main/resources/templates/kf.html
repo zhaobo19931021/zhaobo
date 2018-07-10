@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<div th:include="comm::header"></div>
+		<script >
+			function filterQuery(){
+				$('#kfGrid').datagrid('reload',{
+					kfbh:$('#kfbh').numberbox('getValue'),
+					kfmc:$('#kfmc').textbox('getValue')
+				});
+			}
+			function toDelete(){
+				var row =$('#kfGrid').datagrid('getSelected')
+				if(row!=null){
+					$.messager.confirm('询问','是否删除',function(f){
+						if(f==true){
+							$.post('kfDelete.do',{kfbh:row.kfbh},function(){
+								$.messager.show({
+									title:"提示",
+									msg:'删除成功'
+								});
+								$('#kfGrid').datagrid('reload') ;
+							})
+						}
+					});
+				}
+			}
+			
+			function toAdd(){
+				$('#dlg1').dialog('open');
+			}
+			function saves(){
+				$('#kfForm').form('submit',{
+					success:function(){
+						$('#dlg1').dialog('close'),
+						$.messager.show({
+							title:"提示",
+							msg:"保存成功"
+						});
+						$('#kfGrid').datagrid('load');
+					}
+				});
+			}
+			
+			function toEdit(){
+				var row = $('#kfGrid').datagrid('getSelected');
+				if(row){
+					$.post('kfEdit.do',{kfbh:row.kfbh},function(kf){
+						$('#kfUpdateForm').form('load',kf);
+						$('#dlg2').dialog('open');
+					},'json')
+				}
+			}
+			
+			function update(){
+				$('#kfUpdateForm').form('submit',{
+					success:function(){
+						$.messager.show({
+							title:"提示",
+							msg:"修改成功"
+						});
+						$('#dlg2').dialog('close');
+						$("#kfGrid").datagrid('reload');
+					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<table id="kfGrid" class="easyui-datagrid"
+			   data-options="url:'kf.do',pagination:true,
+			   singleSelect:true,fit:true,fitColumns:true,
+			   toolbar:'#filters'">
+			   <thead>
+			   		<tr>
+			   			<th data-options="field:'kfbh',width:80,align:'center'">库房编号</th>
+			   			<th data-options="field:'kfmc',width:100,align:'center'">库房名称</th>
+			   			<th data-options="field:'zjm',width:80,align:'center'">助记码</th>
+			   			<th data-options="field:'kfdz',width:80,align:'center'">库房地址</th>
+			   			<th data-options="field:'kfgly',width:80,align:'center'">库房管理员</th>
+			   			<th data-options="field:'kflxfs',width:80,align:'center'">库房联系方式</th>
+			   		</tr>
+			   </thead>
+		</table>
+		<div id="filters">
+			<input class="easyui-numberbox" id="kfbh" name="kfbh" label="库房编号" />
+			<input class="easyui-textbox" id="kfmc" name="kfmc" label="库房名称" />
+			<a class="easyui-linkbutton" iconCls="icon-search" onclick="filterQuery()">查询</a>
+			<a class="easyui-linkbutton" iconCls="icon-add" onclick="toAdd()">新建</a>
+			<a class="easyui-linkbutton" iconCls="icon-edit" onclick="toEdit()">编辑</a>
+			<a class="easyui-linkbutton" iconCls="icon-remove" onclick="toDelete()">删除</a>
+		</div>
+		
+		<div class="easyui-dialog" id="dlg1" data-options="modal:true,width:350,closed:true,title:'批量导入',buttons:'#btns1'">
+			<div style="margin:20px;">
+				<form id="kfForm" action="kfSaves.do" method="post" enctype="multipart/form-data">
+					<input type="file" name="excel" />
+				</form>
+			</div>
+		</div>
+		
+		<div id="btns1">
+			<a class="easyui-linkbutton" iconCls="icon-ok" onclick="saves()">提交</a>
+		</div>
+		
+		<div class="easyui-dialog" id="dlg2" data-options="modal:true,width:350,closed:true,title:'修改',buttons:'#btns2'">
+			<form id="kfUpdateForm" action="kfUpdate.do" method="post">
+				<div style="margin:10px;">
+					<input class="easyui-textbox"  id="eidt_kfbh" name="kfbh" readonly="true" style="width:100%" label="库房编号"/>
+				</div>
+				<div style="margin:10px;">
+					<input class="easyui-textbox"  id="eidt_kfmc" name="kfmc" required="true" style="width:100%" label="库房名称" />
+				</div>
+				<div style="margin:10px;">
+					<input class="easyui-textbox"  id="eidt_kfdz" name="kfdz" required="true" style="width:100%" label="库房地址" />
+				</div>
+				<div style="margin:10px;">
+					<input class="easyui-textbox"  id="eidt_kfgly" name="kfgly" required="true" style="width:100%" label="库房管理员" />
+				</div>
+				<div style="margin:10px;">
+					<input class="easyui-textbox"  id="eidt_kflxfs" name="kflxfs" required="true" style="width:100%" label="库房联系方式" />
+				</div>
+			</form>
+		</div>
+		
+		<div id="btns2">
+			<a class="easyui-linkbutton" iconCls="icon-ok" onclick="update()">提交</a>
+		</div>
+	</body>
+</html>
+
+
+
+
+
